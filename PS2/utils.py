@@ -17,7 +17,7 @@ warnings.filterwarnings("ignore")
 def make_count(count, number):
     return np.array([np.ones(count) * number])
 
-def make_voter_array(counts):
+def make_count_array(counts):
     bases = [-2, -1, 0, 1, 2]
     arr = np.array([])
     for i, j in zip(counts, bases):
