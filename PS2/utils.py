@@ -14,6 +14,7 @@ from ipywidgets import interact, interactive, fixed, interact_manual
 
 warnings.filterwarnings("ignore")
 #sns.set(style="whitegrid")
+
 def make_count(count, number):
     return np.array([np.ones(count) * number])
 
@@ -61,13 +62,12 @@ def plot_voters(counts):
     plt.xticks([-2, -1, 0, 1, 2])
     plt.show()
 
-
 def plot_voters_candidates(counts, candA, candB):
     
     pos = [] 
     keys = {} # this dict will help to keep track ...
     
-    data = make_count_array(counts)
+    data = make_voter_array(counts)
     voting = {}
     candidates = {'candA': 'Candidate A', 'candB': 'Candidate B'}
 
@@ -91,15 +91,52 @@ def plot_voters_candidates(counts, candA, candB):
         if diffA < diffB:
             voting[i] = 'candA'
         elif diffB == diffA:
-            voting[i] = np.random.choice(['candA', 'candB'], p=[0.5, 0.5])
-            continue
+            #distributing the voters 
+            voting[i] = ('candA', 'candB')        
         else:
             voting[i] = 'candB'
         
-    
+
     for key, value in zip(keys.keys(), keys.values()):
-        print('There are ' + str(value) + ' ' + politicalStances[key] + 
-              ' (' + str(key) + ') ' + 'voters who will vote for ' + candidates[voting[key]])
+        who_voting = voting[i]
+        half = False
+        if type(who_voting) == tuple:   
+            half = True 
+        if half == False: 
+            print('There are ' + str(value) + ' ' + politicalStances[key] + 
+                  ' (' + str(key) + ') ' + 'voters who will vote for ' + candidates[who_voting])
+        else:
+            print(politicalStances[key] + ' voters are indifferent about candidates. Half will go to' + 
+                  ' Candidate A, half with Candidate B')
+            half = False
+            int_value = value // 2
+            someInt = np.random.choice([0, 1], p=[0.5, 0.5])
+            remainder = value % 2
+            if int_value == 0:
+                who_voting_now = np.random.choice(['Candidate A','Candidate B'], p=[.5, .5])
+                print('There are ' + str(value) + ' ' + politicalStances[key] + 
+                      ' (' + str(key) + ') ' + 'voters who will vote for ' + who_voting_now)
+                continue
+            if half == False:
+                who_voting_now = who_voting[0]
+                if someInt == 0: 
+                    numVoters = int_value + remainder
+                else:
+                    numVoters = int_value
+                print('There are ' + str(numVoters) + ' ' + politicalStances[key] + 
+                  ' (' + str(key) + ') ' + 'voters who will vote for ' + candidates[who_voting_now])
+                half = True
+            if half == True:
+                who_voting_now = who_voting[1]
+                if someInt == 1: 
+                    numVoters = int_value + remainder
+                else: 
+                    numVoters = int_value
+                print('There are ' + str(numVoters) + ' ' + politicalStances[key] + 
+                  ' (' + str(key) + ') ' + 'voters who will vote for ' + candidates[who_voting_now])
+
+                
+
     
         
     colorArr = make_color_arr(data)
@@ -114,6 +151,10 @@ def plot_voters_candidates(counts, candA, candB):
                                                                    connectionstyle='arc3, rad=0.2'))
     plt.annotate('Candidate B', (candB, 0), (candB, 10), arrowprops=dict(arrowstyle='wedge', 
                                                                    connectionstyle='arc3, rad=-0.2'))
+    
+    
+    
+    plt.show()
     
     
     
